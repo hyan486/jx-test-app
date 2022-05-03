@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-demo
+spec:
+  workspaces:
+    - name: pipeline-shared-data # Name of the workspace in the Pipeline
+  params:
+    - name: image-repo
+      type: string
+      description: Docker image name
+      default: chanmi910/demo
+    - name: dockerfile_path
+      type: string
+      default: ./Dockerfile
+  tasks:
+    - name: git-clone # clone 받은 소스를 output으로 정의된 workspace로 복제함
+      taskRef:
+        name: git-clone
+      params:
+        - name: url # Repository URL to clone from. (required)
+          value: "$(params.msa_repo_url)"
+        - name: revision
+          value: "master"
+        - name: deleteExisting # 해당 경로에 파일이 존재할 경우 삭제 후 다운로드 받을 것인지 여부 (default: true)
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: pipeline-shared-data
+    - name: gradle-build
+      taskRef:
+        name: gradle
+      runAfter:
+        - git-clone
+      params:
+        - name: TASKS
+          value:
+            - clean
+            - build
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+    - name: image-build-push
+      taskRef:
+        name: buildah
+      runAfter:
+        - gradle-build
+      params:
+        - name: IMAGE
+          value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
+        - name: DOCKERFILE
+          value: "$(params.dockerfile_path)"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+

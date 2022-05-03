@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: pipelinerun-demo-
+spec:
+  serviceAccountName: tekton-sa
+  params:
+    - name: msa_repo_url
+      value: https://github.com/chanmi910/cicd-tekton
+  pipelineRef:
+    name: pipeline-demo
+  workspaces:
+    - name: pipeline-shared-data
+      persistentvolumeclaim:
+        claimName: task-pvc
