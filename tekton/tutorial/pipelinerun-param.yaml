@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  creationTimestamp: null
+  generateName: hello-goodbye-run-
+  namespace: default
+spec:
+  pipelineRef:
+    name: hello-goodbye
+  params:
+    - name: testparam
+      value: helllllloooooo
