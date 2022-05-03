@@ -24,6 +24,7 @@ kubectl get pods --namespace tekton-pipelines
 
 
 
+
 ### 명령어
 * `kubectl get task` or `tkn task list`: task 조회
 * `kubectl get taskrun` or `tkn taskrun list`: 실행된 task 조회
