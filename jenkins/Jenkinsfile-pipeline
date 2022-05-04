@@ -1,0 +1,26 @@
+pipeline {
+  agent {
+    kubernetes {
+      label 'jenkins-agent'
+      yamlFile 'jenkins-agent.yaml'
+    }
+  }
+    stages {
+        stage('Docker') {
+          steps {
+            container('docker') {
+              sh 'docker version'
+            }
+          }
+        }
+
+        stage('Gradle build') {
+          steps {
+            container('gradle') {
+              sh './gradlew clean build'
+            }
+          }
+        }
+    }
+
+}
