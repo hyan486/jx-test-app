@@ -10,8 +10,10 @@ kubectl get pods --namespace tekton-pipelines
 
 * tekton CLI 설치
 ```shell
-tektoncli - releases
-rpm -Uvh https://github.com/tektoncd/cli/releases/download/v0.18.0/tektoncd-cli-0.18.0_Linux-64bit.rpm
+# Get the tar.xz
+curl -LO https://github.com/tektoncd/cli/releases/download/v0.14.0/tkn_0.14.0_Linux_x86_64.tar.gz
+# Extract tkn to your PATH (e.g. /usr/local/bin)
+sudo tar xvzf tkn_0.14.0_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
 tkn version
 ```
 
@@ -21,6 +23,27 @@ kubectl apply --filename https://github.com/tektoncd/dashboard/releases/latest/d
 kubectl get pods --namespace tekton-pipelines
 ```
 
+* Longhorn 설치 (K8S StorageClass)
+```shell
+yum install -y iscsi-initiator-utils
+kubectl apply -f https://kubetm.github.io/yamls/longhorn/longhorn.yaml
+kubectl get pods -n longhorn-system
+
+kubectl apply -f - <<END
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast
+provisioner: driver.longhorn.io
+parameters:
+  dataLocality: disabled
+  fromBackup: ""
+  fsType: ext4
+  numberOfReplicas: "3"
+  staleReplicaTimeout: "30"
+END
+kubectl get storageclasses.storage.k8s.io
+```
 
 
 
