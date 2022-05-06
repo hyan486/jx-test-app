@@ -13,8 +13,10 @@ spec:
     - name: dockerfile_path
       type: string
       default: ./Dockerfile
+    - name: msa_repo_url
+      type: string
   tasks:
-    - name: git-clone # clone 받은 소스를 output으로 정의된 workspace로 복제함
+    - name: clone-repository # clone 받은 소스를 output으로 정의된 workspace로 복제함
       taskRef:
         name: git-clone
       params:
@@ -23,7 +25,7 @@ spec:
         - name: revision
           value: "master"
         - name: deleteExisting # 해당 경로에 파일이 존재할 경우 삭제 후 다운로드 받을 것인지 여부 (default: true)
-          value: "true"
+          valteue: "true"
       workspaces:
         - name: output
           workspace: pipeline-shared-data
@@ -31,7 +33,7 @@ spec:
       taskRef:
         name: gradle
       runAfter:
-        - git-clone
+        - clone-repository
       params:
         - name: TASKS
           value:
