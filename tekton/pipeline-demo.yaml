@@ -27,7 +27,7 @@ spec:
         - name: revision
           value: "master"
         - name: deleteExisting # 해당 경로에 파일이 존재할 경우 삭제 후 다운로드 받을 것인지 여부 (default: true)
-          valteue: "true"
+          value: "true"
       workspaces:
         - name: output
           workspace: pipeline-shared-data
