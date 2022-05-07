@@ -21,7 +21,8 @@ spec:
     - name: GRADLE_IMAGE
       description: Gradle base image.
       type: string
-      default: docker.io/library/gradle:6.9-jdk8@sha256:571312a1555f5a43305e3a73505c1786c335e8acc441495a396f054194327885
+      default: docker.io/library/gradle:7.4.2-jdk11@sha256:9f7c2197d02dc9c4f8806fc0610a6f4c99abc6bf0a4a4b4da755a12031b2cbbb
+      #default: docker.io/library/gradle:6.9-jdk8@sha256:571312a1555f5a43305e3a73505c1786c335e8acc441495a396f054194327885
     - name: PROJECT_DIR
       description: The directory containing build.gradle
       type: string

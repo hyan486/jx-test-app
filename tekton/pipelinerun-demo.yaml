@@ -7,6 +7,8 @@ spec:
   params:
     - name: msa_repo_url
       value: https://github.com/chanmi910/cicd-tekton
+    - name: image_registry_secret
+      value: docker-secret
   pipelineRef:
     name: pipeline-demo
   workspaces:
