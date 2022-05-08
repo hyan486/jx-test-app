@@ -15,8 +15,8 @@ spec:
       default: ./Dockerfile
     - name: msa_repo_url
       type: string
-    - name: image_registry_secret
-      type: string
+#    - name: image_registry_secret # secret을 직접 사용할 경우
+#      type: string
   tasks:
     - name: clone-repository # clone 받은 소스를 output으로 정의된 workspace로 복제함
       taskRef:
@@ -52,8 +52,8 @@ spec:
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
         - name: DOCKERFILE
           value: "$(params.dockerfile_path)"
-        - name: IMAGE_REGISTRY_SECRET
-          value: "$(params.image_registry_secret)"
+#        - name: IMAGE_REGISTRY_SECRET
+#          value: "$(params.image_registry_secret)"
       workspaces:
         - name: source
           workspace: pipeline-shared-data
