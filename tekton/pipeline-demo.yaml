@@ -52,6 +52,8 @@ spec:
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
         - name: DOCKERFILE
           value: "$(params.dockerfile_path)"
+        - name: FORMAT
+          value: "docker"
 #        - name: IMAGE_REGISTRY_SECRET
 #          value: "$(params.image_registry_secret)"
       workspaces:
