@@ -59,4 +59,19 @@ spec:
       workspaces:
         - name: source
           workspace: pipeline-shared-data
+    - name: deploy-app
+      taskRef:
+        name: demo-deploy-kubectl
+      runAfter:
+        - image-build-push
+      params:
+        - name: imageURL
+          value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
+        - name: path
+          value: $(workspaces.source.path)/tekton/app-deployment.yaml
+        - name: yamlPathToImage
+          value: "spec.template.spec.containers[0].image"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
 
