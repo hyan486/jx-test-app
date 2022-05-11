@@ -18,5 +18,6 @@ spec:
       persistentvolumeclaim:
         claimName: task-pvc
     - name: shared-git-config
-      persistentvolumeclaim:
-        claimName: argo-pvc
+      emptyDir: {}
+#      persistentvolumeclaim:
+#        claimName: argo-pvc
