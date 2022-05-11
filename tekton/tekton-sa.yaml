@@ -8,7 +8,19 @@ metadata:
 type: kubernetes.io/basic-auth
 stringData:
   username: chanmi910
-  password: 8804ff0c-896e-49c0-9cec-d6cbce7babb7
+  password: <password>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-secret
+  annotations:
+    tekton.dev/git-0: https://github.com
+type: kubernetes.io/basic-auth
+stringData:
+  username: chanmi910
+  password: <password>
+  email: chanmi910@gmail.com
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -16,3 +28,4 @@ metadata:
   name: tekton-sa
 secrets:
   - name: docker-secret
+  - name: git-secret
