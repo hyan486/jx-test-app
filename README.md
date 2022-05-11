@@ -89,5 +89,11 @@ spec:
         claimName: task-pvc
 ```       
 
+## Argo CD
+``` shell
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/ha/install.yaml
+``` 
+
 ## DemoApplication
 Application의 Port 정보를 출력함 
