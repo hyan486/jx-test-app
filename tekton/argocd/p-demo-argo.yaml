@@ -1,0 +1,82 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: p-demo-argo
+spec:
+  workspaces:
+    - name: pipeline-shared-data # Name of the workspace in the Pipeline
+    - name: shared-git-config
+  params:
+    - name: image-repo
+      type: string
+      description: Docker image name
+      default: chanmi910/demo
+    - name: dockerfile_path
+      type: string
+      default: ./Dockerfile
+    - name: msa_repo_url
+      type: string
+    - name: argo_repo_url
+      type: string
+    - name: git_repository_secret
+      type: string
+  tasks:
+    - name: clone-repository # clone 받은 소스를 output으로 정의된 workspace로 복제함
+      taskRef:
+        name: git-clone
+      params:
+        - name: url # Repository URL to clone from. (required)
+          value: $(params.msa_repo_url)
+        - name: revision
+          value: "master"
+        - name: deleteExisting # 해당 경로에 파일이 존재할 경우 삭제 후 다운로드 받을 것인지 여부 (default: true)
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: pipeline-shared-data
+    - name: gradle-build
+      taskRef:
+        name: gradle
+      runAfter:
+        - clone-repository
+      params:
+        - name: TASKS
+          value: "build"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+    - name: image-build-push
+      taskRef:
+        name: buildah
+      runAfter:
+        - gradle-build
+      params:
+        - name: IMAGE
+          value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
+        - name: DOCKERFILE
+          value: $(params.dockerfile_path)
+        - name: FORMAT
+          value: "docker"
+      workspaces:
+        - name: source
+          workspace: pipeline-shared-data
+    - name: deploy-argo
+      taskRef:
+        name: deploy-argo
+      runAfter:
+        - image-build-push
+      params:
+        - name: git_url
+          value: $(params.argo_repo_url)
+        - name: image
+          value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
+        - name: path
+          value: $(workspaces.source.path)/cicd-tekton-argo-config/test/deployment.yaml
+        - name: image_yaml_path
+          value: ".spec.template.spec.containers[0].image"
+        - name: git_repository_secret
+          value: $(params.git_repository_secret)
+      workspaces:
+        - name: source
+          workspace: shared-git-config
+

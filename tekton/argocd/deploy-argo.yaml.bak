@@ -1,0 +1,51 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-argo
+spec:
+  params:
+    - name: path
+      description: Path to the manifest to apply
+#    - name: yqArg
+#      description: Okay this is a hack, but I didn't feel right hard-coding `-d1` down below
+    - name: yamlPathToImage
+      description: The path to the image to replace in the yaml manifest (arg to yq)
+    - name: imageURL
+      description: The URL of the image to deploy
+    - name: gitURL
+      description: The URL of the git to deploy
+  workspaces:
+    - name: source
+  steps:
+    - name: clone-git
+      image: sombralibre/gitclient:latest
+      env:
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.source.path)
+      script: |
+        cd ${WORKSPACE_OUTPUT_PATH}
+        rm -rf cicd-tekton-argo-config
+        git clone https://chanmi910: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@github.com/chanmi910/cicd-tekton-argo-config.git
+    - name: replace-image
+      image: mikefarah/yq:3
+      command: ['yq']
+      args:
+        - "w"
+        - "-i"
+#        - "$(params.yqArg)"
+        - "$(params.path)"
+        - "$(params.yamlPathToImage)"
+        - "$(params.imageURL)"
+    - name: push-git
+      image: sombralibre/gitclient:latest
+      env:
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.source.path)
+      script: |
+        git config --global user.email "chanmi910@gmail.com"
+        git config --global user.name "chanmi910"
+        
+        cd "${WORKSPACE_OUTPUT_PATH}"/cicd-tekton-argo-config
+        git add .
+        git commit -m "update images: $(params.imageURL)"
+        git push

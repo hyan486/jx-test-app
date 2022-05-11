@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-argo
+spec:
+  params:
+    - name: path
+      description: Path to the manifest to apply
+    - name: image_yaml_path
+      description: The path to the image to replace in the yaml manifest (arg to yq)
+    - name: image
+      description: The URL of the image to deploy
+      default: ".spec.template.spec.containers[0].image"
+    - name: git_url
+      description: The URL of the git to deploy
+    - name: git_repository_secret
+      description: Kubernetes secrets
+  workspaces:
+    - name: source
+  steps:
+    - name: deploy-argo
+      image: yasazo/git-yq:latest
+      env:
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.source.path)
+        - name: GIT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: $(params.git_repository_secret)
+              key: username
+        - name: GIT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: $(params.git_repository_secret)
+              key: password
+        - name: GIT_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: $(params.git_repository_secret)
+              key: email
+      script: |
+        cd ${WORKSPACE_OUTPUT_PATH}
+        rm -rf cicd-tekton-argo-config
+        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@{params.git_url}
+        yq e '$(params.image_yaml_path) = "$(params.image)"' -i "$(params.path)"
+
+        git config --global user.email ${GIT_EMAIL}
+        git config --global user.name ${GIT_USERNAME}
+        
+        cd ${WORKSPACE_OUTPUT_PATH}/cicd-tekton-argo-config
+        git add .
+        git commit -m "update images: $(params.image)"
+        git push

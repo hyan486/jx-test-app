@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: pr-demo-argo-
+spec:
+  serviceAccountName: tekton-sa
+  params:
+    - name: msa_repo_url
+      value: https://github.com/chanmi910/cicd-tekton
+    - name: argo_repo_url
+      value: github.com/chanmi910/cicd-tekton-argo-config.git
+    - name: git_repository_secret # secret을 직접 사용할 경우
+      value: git-secret
+  pipelineRef:
+    name: p-demo-argo
+  workspaces:
+    - name: pipeline-shared-data
+      persistentvolumeclaim:
+        claimName: task-pvc
+    - name: shared-git-config
+      persistentvolumeclaim:
+        claimName: argo-pvc
