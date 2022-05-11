@@ -71,7 +71,7 @@ spec:
         - name: image
           value: "$(params.image-repo):$(tasks.clone-repository.results.commit)"
         - name: path
-          value: $(workspaces.source.path)/cicd-tekton-argo-config/test/deployment.yaml
+          value: $(workspaces.source.path)/test/deployment.yaml
         - name: image_yaml_path
           value: ".spec.template.spec.containers[0].image"
         - name: git_repository_secret

@@ -39,13 +39,13 @@ spec:
               name: $(params.git_repository_secret)
               key: email
       script: |
-        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@$(params.git_url)
+        cd ${WORKSPACE_OUTPUT_PATH}
+        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@$(params.git_url) .
         yq e '$(params.image_yaml_path) = "$(params.image)"' -i "$(params.path)"
 
         git config --global user.email ${GIT_EMAIL}
         git config --global user.name ${GIT_USERNAME}
         
-        cd ${WORKSPACE_OUTPUT_PATH}/cicd-tekton-argo-config
         git add .
         git commit -m "update images: $(params.image)"
         git push
