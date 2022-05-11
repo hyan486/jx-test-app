@@ -41,7 +41,7 @@ spec:
       script: |
         cd ${WORKSPACE_OUTPUT_PATH}
         rm -rf cicd-tekton-argo-config
-        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@{params.git_url}
+        git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@$(params.git_url)
         yq e '$(params.image_yaml_path) = "$(params.image)"' -i "$(params.path)"
 
         git config --global user.email ${GIT_EMAIL}
