@@ -46,6 +46,10 @@ spec:
         git config --global user.email ${GIT_EMAIL}
         git config --global user.name ${GIT_USERNAME}
         
-        git add .
-        git commit -m "update images: $(params.image)"
-        git push
+        if ! git diff-index --quiet HEAD --; then        
+          git add .
+          git commit -m "update images: $(params.image)"
+          git push
+        else
+            echo "no changes, git repository is up to date"
+        fi
